@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Stadium Event Navigator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <header class="glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-stadium"></i>
+                <h1>Nexus Arena</h1>
+            </div>
+            <div class="header-controls">
+                <div class="live-attendees">
+                    <span class="live-dot"></span>
+                    <span id="attendeeCount">42,501</span> Attendees
+                </div>
+                <div class="time-display" id="currentTime">--:--:--</div>
+                <div class="notification-bell" id="notifBell">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge" id="notifBadge">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Sidebar / Controls -->
+            <aside class="sidebar glass-panel">
+                <div class="control-group">
+                    <h3>Floors</h3>
+                    <div class="floor-selector">
+                        <button class="floor-btn active" data-floor="1">Lvl 1 (Ground)</button>
+                        <button class="floor-btn" data-floor="2">Lvl 2 (Concourse)</button>
+                        <button class="floor-btn" data-floor="3">Lvl 3 (VIP)</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Legend & Filters</h3>
+                    <div class="legend-list" id="legendList">
+                        <!-- Legend items injected via JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Map Viewport -->
+            <section class="map-container" id="mapContainer">
+                <div class="map-wrapper" id="mapWrapper">
+                    <!-- SVG map generated here -->
+                    <svg id="stadiumMap" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Dynamic glow effect for stadium -->
+                        <defs>
+                            <radialGradient id="fieldGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.1"/>
+                                <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
+                            </radialGradient>
+                            <linearGradient id="laser" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="transparent" />
+                                <stop offset="50%" stop-color="rgba(0, 240, 255, 0.2)" />
+                                <stop offset="100%" stop-color="transparent" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Stadium base shape -->
+                        <rect x="100" y="50" width="800" height="700" rx="200" fill="#1a1f2b" stroke="#3d4966" stroke-width="4"/>
+                        <rect x="250" y="200" width="500" height="400" rx="100" fill="#0d1117" stroke="#3d4966" stroke-width="2"/>
+                        <rect x="250" y="200" width="500" height="400" rx="100" fill="url(#fieldGlow)" />
+                        
+                        <!-- Animated sweeping laser effect -->
+                        <rect x="100" y="50" width="100" height="700" fill="url(#laser)">
+                            <animate attributeName="x" from="100" to="800" dur="8s" repeatCount="indefinite" />
+                        </rect>
+
+                        <text x="500" y="400" fill="#3d4966" text-anchor="middle" font-size="24" font-weight="bold" opacity="0.5">FIELD</text>
+                        
+                        <!-- Simulated Crowd Movement (Animated Paths) -->
+                        <g opacity="0.6">
+                            <!-- Concourse loop 1 -->
+                            <path id="path1" d="M 200,150 L 800,150 L 800,650 L 200,650 Z" fill="none" stroke="transparent"/>
+                            <!-- Concourse loop 2 -->
+                            <path id="path2" d="M 150,400 A 350 350 0 1 1 150.01 400" fill="none" stroke="transparent"/>
+
+                            <circle r="3" fill="#a855f7" filter="blur(1px)">
+                                <animateMotion dur="15s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion>
+                            </circle>
+                            <circle r="3" fill="#22c55e" filter="blur(1px)">
+                                <animateMotion dur="20s" begin="2s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion>
+                            </circle>
+                            <circle r="3" fill="#00f0ff" filter="blur(1px)">
+                                <animateMotion dur="12s" begin="5s" repeatCount="indefinite"><mpath href="#path2"/></animateMotion>
+                            </circle>
+                            <circle r="3" fill="#ef4444" filter="blur(1px)">
+                                <animateMotion dur="18s" begin="1s" repeatCount="indefinite"><mpath href="#path2"/></animateMotion>
+                            </circle>
+                            <circle r="3" fill="#eab308" filter="blur(1px)">
+                                <animateMotion dur="25s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion>
+                            </circle>
+                        </g>
+
+                        <!-- Markers group -->
+                        <g id="markersGroup"></g>
+                        <!-- User Location -->
+                        <circle id="userLocation" cx="500" cy="700" r="8" fill="#00f0ff" stroke="#fff" stroke-width="2" class="pulse-marker"/>
+                        <text x="500" y="720" fill="#00f0ff" text-anchor="middle" font-size="12">You</text>
+                    </svg>
+                </div>
+                <!-- Map controls (zoom) -->
+                <div class="map-controls glass-panel">
+                    <button id="zoomIn"><i class="fa-solid fa-plus"></i></button>
+                    <button id="zoomOut"><i class="fa-solid fa-minus"></i></button>
+                    <button id="resetView"><i class="fa-solid fa-expand"></i></button>
+                </div>
+            </section>
+
+            <!-- Details Panel -->
+            <aside class="details-panel glass-panel hidden" id="detailsPanel">
+                <button class="close-btn" id="closeDetails"><i class="fa-solid fa-xmark"></i></button>
+                <div id="detailsContent">
+                    <!-- Content injected via JS -->
+                </div>
+            </aside>
+        </main>
+
+        <!-- Toasts Container -->
+        <div id="toastContainer" class="toast-container"></div>
+        
+        <!-- Hover Tooltip -->
+        <div id="mapTooltip" class="map-tooltip hidden"></div>
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
