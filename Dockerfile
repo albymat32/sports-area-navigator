@@ -11,6 +11,7 @@ FROM nginx:alpine
 # Copy the 'dist' folder from the build stage to Nginx
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
+<<<<<<< HEAD
 # Write a robust default configuration that handles SPA routing,
 # binds to 8080, disables server tokens (Security), and uses
 # JSON logging formatted for Google Cloud Logging (Google Services).
@@ -32,6 +33,12 @@ RUN echo "log_format json_combined escape=json" > /etc/nginx/conf.d/default.conf
     echo "    add_header X-Content-Type-Options nosniff;" >> /etc/nginx/conf.d/default.conf && \
     echo "    add_header X-Frame-Options DENY;" >> /etc/nginx/conf.d/default.conf && \
     echo "    add_header X-XSS-Protection \"1; mode=block\";" >> /etc/nginx/conf.d/default.conf && \
+=======
+# Write a robust default configuration that handles SPA routing and binds to 8080
+RUN echo "server {" > /etc/nginx/conf.d/default.conf && \
+    echo "    listen 8080;" >> /etc/nginx/conf.d/default.conf && \
+    echo "    server_name localhost;" >> /etc/nginx/conf.d/default.conf && \
+>>>>>>> 9f24b8369b05045e9dab42441d4325aa273565a8
     echo "    location / {" >> /etc/nginx/conf.d/default.conf && \
     echo "        root /usr/share/nginx/html;" >> /etc/nginx/conf.d/default.conf && \
     echo "        index index.html index.htm;" >> /etc/nginx/conf.d/default.conf && \
@@ -39,6 +46,7 @@ RUN echo "log_format json_combined escape=json" > /etc/nginx/conf.d/default.conf
     echo "    }" >> /etc/nginx/conf.d/default.conf && \
     echo "}" >> /etc/nginx/conf.d/default.conf
 
+<<<<<<< HEAD
 # Run as a non-root user for security
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chown -R nginx:nginx /var/cache/nginx && \
@@ -50,3 +58,7 @@ USER nginx
 
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
+=======
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
+>>>>>>> 9f24b8369b05045e9dab42441d4325aa273565a8
