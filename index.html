@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Security: Basic Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://images.unsplash.com https://i.pravatar.cc; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline';">
 </head>
 <body>
     <div id="app">
@@ -18,25 +20,25 @@
                 <span class="nav-text">Nexus</span>
             </div>
             <div class="nav-links">
-                <button class="nav-btn active" data-target="mapPage" title="Interactive Map">
-                    <i class="fa-solid fa-map-location-dot"></i>
+                <button class="nav-btn active" data-target="mapPage" title="Interactive Map" aria-label="Interactive Map">
+                    <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
                     <span class="nav-text">Map View</span>
                 </button>
-                <button class="nav-btn" data-target="dashboardPage" title="Live Dashboard">
-                    <i class="fa-solid fa-chart-line"></i>
+                <button class="nav-btn" data-target="dashboardPage" title="Live Dashboard" aria-label="Live Dashboard">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
                     <span class="nav-text">Dashboard</span>
                 </button>
-                <button class="nav-btn" data-target="directoryPage" title="Directory & Services">
-                    <i class="fa-solid fa-list-ul"></i>
+                <button class="nav-btn" data-target="directoryPage" title="Directory & Services" aria-label="Directory & Services">
+                    <i class="fa-solid fa-list-ul" aria-hidden="true"></i>
                     <span class="nav-text">Directory</span>
                 </button>
             </div>
             <div class="nav-footer">
-                <button class="nav-btn" title="Settings">
-                    <i class="fa-solid fa-gear"></i>
+                <button class="nav-btn" title="Settings" aria-label="Settings">
+                    <i class="fa-solid fa-gear" aria-hidden="true"></i>
                 </button>
                 <div class="user-avatar">
-                    <img src="https://i.pravatar.cc/150?img=11" alt="User">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="User Profile Avatar">
                 </div>
             </div>
         </nav>
@@ -57,16 +59,16 @@
                         <span class="live-dot"></span>
                         <span id="attendeeCount">42,501</span> Attendees
                     </div>
-                    <div class="time-display" id="currentTime">--:--:--</div>
-                    <div class="notification-bell" id="notifBell">
-                        <i class="fa-solid fa-bell"></i>
-                        <span class="badge" id="notifBadge">0</span>
-                    </div>
+                    <div class="time-display" id="currentTime" aria-live="polite">--:--:--</div>
+                    <button class="notification-bell" id="notifBell" aria-label="Notifications">
+                        <i class="fa-solid fa-bell" aria-hidden="true"></i>
+                        <span class="badge" id="notifBadge" aria-label="0 unread">0</span>
+                    </button>
                 </div>
             </header>
 
             <!-- Pages Container -->
-            <div class="pages-container">
+            <main class="pages-container">
                 
                 <!-- PAGE 1: MAP VIEW -->
                 <div class="page active" id="mapPage">
@@ -159,15 +161,15 @@
                             
                             <!-- Map controls -->
                             <div class="map-controls glass-panel">
-                                <button id="zoomIn" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
-                                <button id="zoomOut" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
-                                <button id="resetView" title="Reset View"><i class="fa-solid fa-expand"></i></button>
-                                <button id="centerUser" title="Center on Me"><i class="fa-solid fa-location-crosshairs"></i></button>
+                                <button id="zoomIn" title="Zoom In" aria-label="Zoom In"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+                                <button id="zoomOut" title="Zoom Out" aria-label="Zoom Out"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+                                <button id="resetView" title="Reset View" aria-label="Reset View"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
+                                <button id="centerUser" title="Center on Me" aria-label="Center on Me"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i></button>
                             </div>
 
                             <!-- Details Panel -->
-                            <aside class="details-panel glass-panel hidden" id="detailsPanel">
-                                <button class="close-btn" id="closeDetails"><i class="fa-solid fa-xmark"></i></button>
+                            <aside class="details-panel glass-panel hidden" id="detailsPanel" aria-hidden="true">
+                                <button class="close-btn" id="closeDetails" aria-label="Close details"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                                 <div id="detailsContent"></div>
                             </aside>
                         </section>
@@ -267,7 +269,7 @@
                     </div>
                 </div>
 
-            </div>
+            </main>
         </div>
 
         <!-- Toasts -->

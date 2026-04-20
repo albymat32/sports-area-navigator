@@ -27,6 +27,21 @@ const categories = {
     security: { label: "Security & Info", color: "var(--cat-security)", icon: "fa-shield-halved", img: "https://images.unsplash.com/photo-1542157585-ef20bfcce579?auto=format&fit=crop&w=400&q=80" }
 };
 
+/**
+ * Escapes HTML characters in a string to prevent XSS vulnerabilities.
+ * @param {string} unsafe - The untrusted string input from a user.
+ * @returns {string} The escaped, safe string.
+ */
+export function escapeHTML(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
 const pois = [
     { id: 'p1', floor: 1, type: 'entrance', x: 500, y: 730, title: 'South Gate (Main)', status: 'open', desc: 'Main entry point. High traffic expected.', queue: 45, waitTime: 12 },
     { id: 'p2', floor: 1, type: 'entrance', x: 500, y: 150, title: 'North Gate', status: 'open', desc: 'North entry point. Faster screening.', queue: 10, waitTime: 3 },
@@ -249,8 +264,8 @@ function openDetails(poi) {
     let comments = commentsData[poi.id] || [];
     let commentsHtml = comments.map(c => `
         <div class="comment">
-            <div class="comment-header"><span>${c.user}</span><span>${c.time}</span></div>
-            <div>${c.text}</div>
+            <div class="comment-header"><span>${escapeHTML(c.user)}</span><span>${escapeHTML(c.time)}</span></div>
+            <div>${escapeHTML(c.text)}</div>
         </div>
     `).join('');
 
@@ -364,10 +379,10 @@ function populateDashboard() {
         const li = document.createElement('li');
         li.className = 'activity-item';
         li.innerHTML = `
-            <div style="color: ${log.color}; font-size: 1.2rem; padding-top: 2px;"><i class="fa-solid ${log.icon}"></i></div>
+            <div style="color: ${log.color}; font-size: 1.2rem; padding-top: 2px;"><i class="fa-solid ${log.icon}" aria-hidden="true"></i></div>
             <div style="flex: 1;">
-                <div class="activity-desc">${log.desc}</div>
-                <div class="activity-time">${log.time}</div>
+                <div class="activity-desc">${escapeHTML(log.desc)}</div>
+                <div class="activity-time">${escapeHTML(log.time)}</div>
             </div>
         `;
         list.appendChild(li);
