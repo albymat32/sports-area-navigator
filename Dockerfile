@@ -11,5 +11,16 @@ FROM nginx:alpine
 # Copy the 'dist' folder from the build stage to Nginx
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Update Nginx to listen on the port Cloud Run provides ($PORT)
-CMD ["/bin/sh", "-c", "sed -i 's/listen  80;/listen '\"${PORT:-8080}\"';/' /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# Write a robust default configuration that handles SPA routing and binds to 8080
+RUN echo "server {" > /etc/nginx/conf.d/default.conf && \
+    echo "    listen 8080;" >> /etc/nginx/conf.d/default.conf && \
+    echo "    server_name localhost;" >> /etc/nginx/conf.d/default.conf && \
+    echo "    location / {" >> /etc/nginx/conf.d/default.conf && \
+    echo "        root /usr/share/nginx/html;" >> /etc/nginx/conf.d/default.conf && \
+    echo "        index index.html index.htm;" >> /etc/nginx/conf.d/default.conf && \
+    echo "        try_files \$uri \$uri/ /index.html;" >> /etc/nginx/conf.d/default.conf && \
+    echo "    }" >> /etc/nginx/conf.d/default.conf && \
+    echo "}" >> /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
