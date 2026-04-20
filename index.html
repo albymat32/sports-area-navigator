@@ -3,134 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Stadium Event Navigator</title>
+    <title>Nexus Arena - Smart Event Experience</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div id="app">
-        <header class="glass-panel">
+        <!-- Navigation Bar -->
+        <nav class="side-nav glass-panel">
             <div class="logo">
                 <i class="fa-solid fa-stadium"></i>
-                <h1>Nexus Arena</h1>
+                <span class="nav-text">Nexus</span>
             </div>
-            <div class="header-controls">
-                <div class="live-attendees">
-                    <span class="live-dot"></span>
-                    <span id="attendeeCount">42,501</span> Attendees
-                </div>
-                <div class="time-display" id="currentTime">--:--:--</div>
-                <div class="notification-bell" id="notifBell">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="badge" id="notifBadge">0</span>
+            <div class="nav-links">
+                <button class="nav-btn active" data-target="mapPage" title="Interactive Map">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span class="nav-text">Map View</span>
+                </button>
+                <button class="nav-btn" data-target="dashboardPage" title="Live Dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span class="nav-text">Dashboard</span>
+                </button>
+                <button class="nav-btn" data-target="directoryPage" title="Directory & Services">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <span class="nav-text">Directory</span>
+                </button>
+            </div>
+            <div class="nav-footer">
+                <button class="nav-btn" title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <div class="user-avatar">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="User">
                 </div>
             </div>
-        </header>
+        </nav>
 
-        <main>
-            <!-- Sidebar / Controls -->
-            <aside class="sidebar glass-panel">
-                <div class="control-group">
-                    <h3>Floors</h3>
-                    <div class="floor-selector">
-                        <button class="floor-btn active" data-floor="1">Lvl 1 (Ground)</button>
-                        <button class="floor-btn" data-floor="2">Lvl 2 (Concourse)</button>
-                        <button class="floor-btn" data-floor="3">Lvl 3 (VIP)</button>
+        <div class="main-content">
+            <!-- Header -->
+            <header class="top-header glass-panel">
+                <div class="header-title">
+                    <h1 id="pageTitle">Interactive Map</h1>
+                    <p class="subtitle">Real-time stadium navigation & analytics</p>
+                </div>
+                <div class="header-controls">
+                    <div class="weather-widget">
+                        <i class="fa-solid fa-cloud-sun" style="color: #fbbf24;"></i>
+                        <span>72°F | Clear</span>
+                    </div>
+                    <div class="live-attendees">
+                        <span class="live-dot"></span>
+                        <span id="attendeeCount">42,501</span> Attendees
+                    </div>
+                    <div class="time-display" id="currentTime">--:--:--</div>
+                    <div class="notification-bell" id="notifBell">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge" id="notifBadge">0</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Pages Container -->
+            <div class="pages-container">
+                
+                <!-- PAGE 1: MAP VIEW -->
+                <div class="page active" id="mapPage">
+                    <div class="map-layout">
+                        <!-- Sidebar / Controls -->
+                        <aside class="sidebar glass-panel">
+                            <div class="control-group">
+                                <h3>Level Selection</h3>
+                                <div class="floor-selector">
+                                    <button class="floor-btn active" data-floor="1">
+                                        <i class="fa-solid fa-layer-group"></i> Lvl 1 (Ground)
+                                    </button>
+                                    <button class="floor-btn" data-floor="2">
+                                        <i class="fa-solid fa-layer-group"></i> Lvl 2 (Concourse)
+                                    </button>
+                                    <button class="floor-btn" data-floor="3">
+                                        <i class="fa-solid fa-layer-group"></i> Lvl 3 (VIP Suite)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <h3>Points of Interest</h3>
+                                <div class="legend-list" id="legendList">
+                                    <!-- Legend items injected via JS -->
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Map Viewport -->
+                        <section class="map-container glass-panel" id="mapContainer">
+                            <div class="map-overlay-stats">
+                                <div class="overlay-stat">Capacity: <span style="color:#4ade80">85%</span></div>
+                                <div class="overlay-stat">Wait Time: <span style="color:#facc15">Med</span></div>
+                            </div>
+                            <div class="map-wrapper" id="mapWrapper">
+                                <svg id="stadiumMap" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <radialGradient id="fieldGlow" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.15"/>
+                                            <stop offset="100%" stop-color="#090b10" stop-opacity="0"/>
+                                        </radialGradient>
+                                        <linearGradient id="laser" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="transparent" />
+                                            <stop offset="50%" stop-color="rgba(0, 240, 255, 0.3)" />
+                                            <stop offset="100%" stop-color="transparent" />
+                                        </linearGradient>
+                                        <filter id="neonGlow">
+                                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                    
+                                    <!-- Stadium base structure -->
+                                    <path d="M 100 200 A 400 400 0 0 1 900 200 L 900 600 A 400 400 0 0 1 100 600 Z" fill="#141928" stroke="#2e3852" stroke-width="4"/>
+                                    <path d="M 150 250 A 350 350 0 0 1 850 250 L 850 550 A 350 350 0 0 1 150 550 Z" fill="#1a2133" stroke="#3d4966" stroke-width="2"/>
+                                    
+                                    <!-- Field -->
+                                    <rect x="250" y="250" width="500" height="300" rx="40" fill="#090b10" stroke="#00f0ff" stroke-width="2" filter="url(#neonGlow)"/>
+                                    <rect x="250" y="250" width="500" height="300" rx="40" fill="url(#fieldGlow)" />
+                                    
+                                    <!-- Animated scanning line effect -->
+                                    <rect x="250" y="250" width="50" height="300" fill="url(#laser)">
+                                        <animate attributeName="x" from="250" to="700" dur="6s" repeatCount="indefinite" />
+                                    </rect>
+
+                                    <text x="500" y="410" fill="#00f0ff" text-anchor="middle" font-size="28" font-weight="800" opacity="0.7" letter-spacing="4">NEXUS FIELD</text>
+                                    
+                                    <!-- Simulated Crowd Movement -->
+                                    <g opacity="0.7">
+                                        <path id="path1" d="M 180,300 L 820,300 L 820,500 L 180,500 Z" fill="none" stroke="transparent"/>
+                                        <path id="path2" d="M 120,400 A 380 380 0 1 1 120.01 400" fill="none" stroke="transparent"/>
+
+                                        <circle r="4" fill="#a855f7" filter="blur(1px)"><animateMotion dur="15s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion></circle>
+                                        <circle r="4" fill="#22c55e" filter="blur(1px)"><animateMotion dur="20s" begin="2s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion></circle>
+                                        <circle r="4" fill="#00f0ff" filter="blur(1px)"><animateMotion dur="12s" begin="5s" repeatCount="indefinite"><mpath href="#path2"/></animateMotion></circle>
+                                        <circle r="4" fill="#ef4444" filter="blur(1px)"><animateMotion dur="18s" begin="1s" repeatCount="indefinite"><mpath href="#path2"/></animateMotion></circle>
+                                    </g>
+
+                                    <!-- Markers -->
+                                    <g id="markersGroup"></g>
+                                    <!-- User -->
+                                    <circle id="userLocation" cx="500" cy="650" r="10" fill="#00f0ff" stroke="#fff" stroke-width="2" class="pulse-marker"/>
+                                    <text x="500" y="675" fill="#00f0ff" text-anchor="middle" font-size="14" font-weight="bold">You Are Here</text>
+                                </svg>
+                            </div>
+                            
+                            <!-- Map controls -->
+                            <div class="map-controls glass-panel">
+                                <button id="zoomIn" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+                                <button id="zoomOut" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+                                <button id="resetView" title="Reset View"><i class="fa-solid fa-expand"></i></button>
+                                <button id="centerUser" title="Center on Me"><i class="fa-solid fa-location-crosshairs"></i></button>
+                            </div>
+
+                            <!-- Details Panel -->
+                            <aside class="details-panel glass-panel hidden" id="detailsPanel">
+                                <button class="close-btn" id="closeDetails"><i class="fa-solid fa-xmark"></i></button>
+                                <div id="detailsContent"></div>
+                            </aside>
+                        </section>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <h3>Legend & Filters</h3>
-                    <div class="legend-list" id="legendList">
-                        <!-- Legend items injected via JS -->
+                <!-- PAGE 2: DASHBOARD VIEW -->
+                <div class="page" id="dashboardPage">
+                    <div class="dashboard-grid">
+                        <div class="dash-card glass-panel stat-card">
+                            <div class="stat-icon" style="background: rgba(0, 240, 255, 0.1); color: #00f0ff;"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-info">
+                                <h4>Total Capacity</h4>
+                                <h2>50,000</h2>
+                                <p class="trend up"><i class="fa-solid fa-arrow-up"></i> 85% Full</p>
+                            </div>
+                        </div>
+                        <div class="dash-card glass-panel stat-card">
+                            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;"><i class="fa-solid fa-burger"></i></div>
+                            <div class="stat-info">
+                                <h4>Avg Food Wait</h4>
+                                <h2>8 min</h2>
+                                <p class="trend down"><i class="fa-solid fa-arrow-down"></i> -2 min from avg</p>
+                            </div>
+                        </div>
+                        <div class="dash-card glass-panel stat-card">
+                            <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;"><i class="fa-solid fa-restroom"></i></div>
+                            <div class="stat-info">
+                                <h4>Restroom Traffic</h4>
+                                <h2>High</h2>
+                                <p class="trend up"><i class="fa-solid fa-arrow-up"></i> Level 1 busiest</p>
+                            </div>
+                        </div>
+                        <div class="dash-card glass-panel stat-card">
+                            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="stat-info">
+                                <h4>Security Incidents</h4>
+                                <h2>0 Active</h2>
+                                <p class="trend neutral"><i class="fa-solid fa-minus"></i> All clear</p>
+                            </div>
+                        </div>
+
+                        <!-- Charts/Visuals -->
+                        <div class="dash-card glass-panel span-2">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-area"></i> Live Crowd Density by Level</h3>
+                            </div>
+                            <div class="chart-container">
+                                <div class="bar-chart">
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 90%; background: linear-gradient(to top, #3b82f6, #00f0ff);"></div>
+                                        <span>Lvl 1</span>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 60%; background: linear-gradient(to top, #8b5cf6, #a855f7);"></div>
+                                        <span>Lvl 2</span>
+                                    </div>
+                                    <div class="bar-col">
+                                        <div class="bar" style="height: 30%; background: linear-gradient(to top, #eab308, #facc15);"></div>
+                                        <span>Lvl 3</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dash-card glass-panel span-2">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-bolt"></i> Active Events & Operations</h3>
+                            </div>
+                            <ul class="activity-list" id="activityList">
+                                <!-- Populated by JS -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </aside>
 
-            <!-- Map Viewport -->
-            <section class="map-container" id="mapContainer">
-                <div class="map-wrapper" id="mapWrapper">
-                    <!-- SVG map generated here -->
-                    <svg id="stadiumMap" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Dynamic glow effect for stadium -->
-                        <defs>
-                            <radialGradient id="fieldGlow" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.1"/>
-                                <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
-                            </radialGradient>
-                            <linearGradient id="laser" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="transparent" />
-                                <stop offset="50%" stop-color="rgba(0, 240, 255, 0.2)" />
-                                <stop offset="100%" stop-color="transparent" />
-                            </linearGradient>
-                        </defs>
-                        
-                        <!-- Stadium base shape -->
-                        <rect x="100" y="50" width="800" height="700" rx="200" fill="#1a1f2b" stroke="#3d4966" stroke-width="4"/>
-                        <rect x="250" y="200" width="500" height="400" rx="100" fill="#0d1117" stroke="#3d4966" stroke-width="2"/>
-                        <rect x="250" y="200" width="500" height="400" rx="100" fill="url(#fieldGlow)" />
-                        
-                        <!-- Animated sweeping laser effect -->
-                        <rect x="100" y="50" width="100" height="700" fill="url(#laser)">
-                            <animate attributeName="x" from="100" to="800" dur="8s" repeatCount="indefinite" />
-                        </rect>
-
-                        <text x="500" y="400" fill="#3d4966" text-anchor="middle" font-size="24" font-weight="bold" opacity="0.5">FIELD</text>
-                        
-                        <!-- Simulated Crowd Movement (Animated Paths) -->
-                        <g opacity="0.6">
-                            <!-- Concourse loop 1 -->
-                            <path id="path1" d="M 200,150 L 800,150 L 800,650 L 200,650 Z" fill="none" stroke="transparent"/>
-                            <!-- Concourse loop 2 -->
-                            <path id="path2" d="M 150,400 A 350 350 0 1 1 150.01 400" fill="none" stroke="transparent"/>
-
-                            <circle r="3" fill="#a855f7" filter="blur(1px)">
-                                <animateMotion dur="15s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion>
-                            </circle>
-                            <circle r="3" fill="#22c55e" filter="blur(1px)">
-                                <animateMotion dur="20s" begin="2s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion>
-                            </circle>
-                            <circle r="3" fill="#00f0ff" filter="blur(1px)">
-                                <animateMotion dur="12s" begin="5s" repeatCount="indefinite"><mpath href="#path2"/></animateMotion>
-                            </circle>
-                            <circle r="3" fill="#ef4444" filter="blur(1px)">
-                                <animateMotion dur="18s" begin="1s" repeatCount="indefinite"><mpath href="#path2"/></animateMotion>
-                            </circle>
-                            <circle r="3" fill="#eab308" filter="blur(1px)">
-                                <animateMotion dur="25s" repeatCount="indefinite"><mpath href="#path1"/></animateMotion>
-                            </circle>
-                        </g>
-
-                        <!-- Markers group -->
-                        <g id="markersGroup"></g>
-                        <!-- User Location -->
-                        <circle id="userLocation" cx="500" cy="700" r="8" fill="#00f0ff" stroke="#fff" stroke-width="2" class="pulse-marker"/>
-                        <text x="500" y="720" fill="#00f0ff" text-anchor="middle" font-size="12">You</text>
-                    </svg>
+                <!-- PAGE 3: DIRECTORY VIEW -->
+                <div class="page" id="directoryPage">
+                    <div class="directory-layout glass-panel">
+                        <div class="directory-header">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="dirSearch" placeholder="Search for food, restrooms, merch...">
+                            </div>
+                            <div class="dir-filters">
+                                <select id="dirFloorFilter">
+                                    <option value="all">All Levels</option>
+                                    <option value="1">Level 1</option>
+                                    <option value="2">Level 2</option>
+                                    <option value="3">Level 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="directory-grid" id="directoryGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
                 </div>
-                <!-- Map controls (zoom) -->
-                <div class="map-controls glass-panel">
-                    <button id="zoomIn"><i class="fa-solid fa-plus"></i></button>
-                    <button id="zoomOut"><i class="fa-solid fa-minus"></i></button>
-                    <button id="resetView"><i class="fa-solid fa-expand"></i></button>
-                </div>
-            </section>
 
-            <!-- Details Panel -->
-            <aside class="details-panel glass-panel hidden" id="detailsPanel">
-                <button class="close-btn" id="closeDetails"><i class="fa-solid fa-xmark"></i></button>
-                <div id="detailsContent">
-                    <!-- Content injected via JS -->
-                </div>
-            </aside>
-        </main>
+            </div>
+        </div>
 
-        <!-- Toasts Container -->
+        <!-- Toasts -->
         <div id="toastContainer" class="toast-container"></div>
-        
-        <!-- Hover Tooltip -->
         <div id="mapTooltip" class="map-tooltip hidden"></div>
     </div>
     <script type="module" src="/main.js"></script>
